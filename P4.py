@@ -69,7 +69,7 @@ recognized = recognize(input)
 # 문자가 나오면 스택에 쌓고, 그다음 문자가 나오면 그 전 문자와의 우선 순위를 비교후 낮다면
 for i in recognized:
     # 여는괄호는 바로 넣음
-    if i == '(':
+    if i == '(' or i == '**':
         num.push(i)
     elif i == ')':
         # (가 나올때까지 연산자 추출
@@ -77,7 +77,7 @@ for i in recognized:
             post.append(num.pop())
         # 여는 괄호는 그냥 뺌
         num.pop()
-    elif i == '+' or i == '-' or i == '/' or i == '*' or i == '**':
+    elif i == '+' or i == '-' or i == '/' or i == '*':
         # top에 있는 연산자가 현재연산자의 우선순위보다 큰경우
         while (not num.isEmpty() and prior(num.top()) >= prior(i)):
             e = num.pop()
@@ -91,21 +91,40 @@ while not num.isEmpty():
 
 answer = Stack()
 oper = ['+', '-', '*', '/', '**']
+token = False
 for i in post:
     if i in oper:
-        n1 = answer.pop()
-        n2 = answer.pop()
-        if i == '+':
-            answer.push(n2+n1)
-        elif i == '-':
-            answer.push(n2-n1)
-        elif i == '*':
-            answer.push(n2*n1)
-        elif i == '/':
-            answer.push(n2/n1)
-        elif i == '**':
-            # 다음 제곱이 끝나기까지 대기.
-            answer.push(n2**n1)
+        if i == '**':
+            # 일단 집어 넣고
+            answer.push(i)
+            # 숫자-숫자-제곱-숫자-제곱의 형태이면 제곱의 제곱 형태인데... 여러번 나올 수 있으니께 제곱이 나오면? 다음
+            # 처음꺼 제외 팝했을때 숫자가 두개 나오면? 별개의 식이므로 그 앞의 **은 한묶음. 바로 진행하면 됨.
+            # 아아 제곱 다음에 숫자 연산자 면 별개라고 보면 되지! 외나면 제곱의 결과가 연산자의 결과가 되니까
+        else:
+            n1 = answer.pop()
+            n2 = answer.pop()
+            # 이제 남은 연산만 진행하면 됨!
+            if n2 == '**':
+                j = n2
+                squr = 1
+                # 숫자가 나올때까지 제곱의 개수를 셈
+                while answer.top() == '**':
+                    j = answer.pop()
+                    squr += 1
+                # 제곱의 결과를 담을 변수
+                num = answer.pop()
+                for k in range(squr):
+                    x = answer.pop()
+                    num = pow(x, num)
+                n2 = num
+            if i == '+':
+                answer.push(n2+n1)
+            elif i == '-':
+                answer.push(n2-n1)
+            elif i == '*':
+                answer.push(n2*n1)
+            elif i == '/':
+                answer.push(n2/n1)
     else:
         answer.push(float(i))
 print(answer.pop())
