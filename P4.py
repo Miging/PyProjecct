@@ -69,7 +69,7 @@ recognized = recognize(input)
 # 문자가 나오면 스택에 쌓고, 그다음 문자가 나오면 그 전 문자와의 우선 순위를 비교후 낮다면
 for i in recognized:
     # 여는괄호는 바로 넣음
-    if i == '(':
+    if i == '(' or i == '**':
         num.push(i)
     elif i == ')':
         # (가 나올때까지 연산자 추출
@@ -77,7 +77,7 @@ for i in recognized:
             post.append(num.pop())
         # 여는 괄호는 그냥 뺌
         num.pop()
-    elif i == '+' or i == '-' or i == '/' or i == '*' or i == '**':
+    elif i == '+' or i == '-' or i == '/' or i == '*':
         # top에 있는 연산자가 현재연산자의 우선순위보다 큰경우
         while (not num.isEmpty() and prior(num.top()) >= prior(i)):
             e = num.pop()
@@ -91,22 +91,22 @@ while not num.isEmpty():
 
 answer = Stack()
 oper = ['+', '-', '*', '/', '**']
+token = False
 for i in post:
     if i in oper:
-        if i == '**':
+        n1 = answer.pop()
+        n2 = answer.pop()
+        if i == '+':
+            answer.push(n2+n1)
+        elif i == '-':
+            answer.push(n2-n1)
+        elif i == '*':
+            answer.push(n2*n1)
+        elif i == '/':
+            answer.push(n2/n1)
+        elif i == '**':
             # 다음 제곱이 끝나기까지 대기.
-            answer.push(i)
-        else:
-            n1 = answer.pop()
-            n2 = answer.pop()
-            if i == '+':
-                answer.push(n2+n1)
-            elif i == '-':
-                answer.push(n2-n1)
-            elif i == '*':
-                answer.push(n2*n1)
-            elif i == '/':
-                answer.push(n2/n1)
+            answer.push(n2**n1)
     else:
         answer.push(float(i))
 print(answer.pop())
