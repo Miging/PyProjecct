@@ -93,19 +93,20 @@ answer = Stack()
 oper = ['+', '-', '*', '/', '**']
 for i in post:
     if i in oper:
-        n1 = answer.pop()
-        n2 = answer.pop()
-        if i == '+':
-            answer.push(n2+n1)
-        elif i == '-':
-            answer.push(n2-n1)
-        elif i == '*':
-            answer.push(n2*n1)
-        elif i == '/':
-            answer.push(n2/n1)
-        elif i == '**':
+        if i == '**':
             # 다음 제곱이 끝나기까지 대기.
-            answer.push(n2**n1)
+            answer.push(i)
+        else:
+            n1 = answer.pop()
+            n2 = answer.pop()
+            if i == '+':
+                answer.push(n2+n1)
+            elif i == '-':
+                answer.push(n2-n1)
+            elif i == '*':
+                answer.push(n2*n1)
+            elif i == '/':
+                answer.push(n2/n1)
     else:
         answer.push(float(i))
 print(answer.pop())
